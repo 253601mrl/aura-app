@@ -1,0 +1,53 @@
+import React, { useState } from 'react';
+import { supabase } from './supabaseClient'; // O arquivo de conexão que criamos antes
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [carregando, setCarregando] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCarregando(true);
+    
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
+
+    if (error) alert('Erro ao aceder: ' + error.message);
+    setCarregando(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-6">
+      <div className="w-full max-w-sm space-y-8 bg-[#121214] p-8 rounded-3xl border border-zinc-800">
+        <div className="text-center">
+          <h1 className="text-2xl font-light tracking-[0.3em] text-white uppercase">Aura</h1>
+          <p className="text-zinc-500 text-xs mt-2 uppercase tracking-widest">Painel de Controlo</p>
+        </div>
+        
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input 
+            type="email" 
+            placeholder="Email" 
+            className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-white outline-none focus:border-white transition-all"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input 
+            type="password" 
+            placeholder="Palavra-passe" 
+            className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-white outline-none focus:border-white transition-all"
+            onChange={(e) => setSenha(e.target.value)}
+          />
+          <button 
+            disabled={carregando}
+            className="w-full bg-white text-black font-bold py-4 rounded-xl uppercase text-xs tracking-widest active:scale-95 transition-all"
+          >
+            {carregando ? 'A entrar...' : 'Entrar'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
